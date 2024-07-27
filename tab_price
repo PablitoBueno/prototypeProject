@@ -1,0 +1,93 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <limits>
+#include <locale>
+
+using namespace std;
+
+// Função para limpar o buffer de entrada
+void trivia() {
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+// Função para calcular e imprimir a tabela de amortização
+void f4(float v, float j, int p) {
+    float p1, p2, prestacao, juros, amortizacao, saldoDevedor;
+
+    // Cálculo da prestação
+    p1 = pow(j + 1, p) * j;
+    p2 = pow(j + 1, p) - 1;
+    p1 = p1 / p2;
+    prestacao = v * p1;
+
+    // Inicialização dos valores de juros, amortização e saldo devedor
+    juros = v * j;
+    amortizacao = prestacao - juros;
+    saldoDevedor = v - amortizacao;
+
+    cout << "Parcela | Prestação | Juros | Amortização | Saldo Devedor\n";
+    cout << "----------------------------------------------------------\n";
+
+    // Loop para calcular e imprimir cada parcela
+    for (int i = 1; i <= p; i++) {
+        if (i == p) {
+            saldoDevedor = 0;
+        }
+
+        cout << setw(3) << i << "  "
+             << setw(9) << fixed << setprecision(2) << prestacao << "  "
+             << setw(9) << fixed << setprecision(2) << juros << "  "
+             << setw(9) << fixed << setprecision(2) << amortizacao << "  "
+             << setw(9) << fixed << setprecision(2) << saldoDevedor << endl;
+
+        juros = saldoDevedor * j;
+        amortizacao = prestacao - juros;
+        saldoDevedor -= amortizacao;
+    }
+}
+
+// Função para inserir o período de tempo
+int inserirPeriodo() {
+    int p;
+    cout << "\n\n - Insira o período de tempo -\n\n - Período: ";
+    cin >> p;
+    trivia();
+    return p;
+}
+
+// Função para inserir a taxa de juros
+float inserirJuros() {
+    float j;
+    cout << "\n\n - Insira a taxa de juros -\n\n - Juros: ";
+    cin >> j;
+    trivia();
+    return j / 100;
+}
+
+// Função para inserir o valor inicial do empréstimo
+float inserirValor() {
+    float v;
+    cout << "\n - Sistema de amortização -\n\n - Insira o valor inicial do empréstimo -\n\n - Valor: ";
+    cin >> v;
+    trivia();
+    return v;
+}
+
+// Função principal para coletar dados e iniciar o cálculo
+void f1() {
+    float v = inserirValor();
+    float j = inserirJuros();
+    int p = inserirPeriodo();
+    f4(v, j, p);
+}
+
+int main() {
+    // Configurando a localidade para Português
+    setlocale(LC_ALL, "Portuguese");
+
+    f1();
+    cout << "\n\n";
+    system("PAUSE");
+    return 0;
+}
