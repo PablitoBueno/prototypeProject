@@ -6,87 +6,89 @@
 
 using namespace std;
 
-// Função para limpar o buffer de entrada
-void trivia() {
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-}
+class Emprestimo {
+private:
+    float v, j, p, prestacao, juros, amortizacao, saldoDevedor;
+    int i;
 
-// Função para calcular e imprimir a tabela de amortização
-void f4(float v, float j, int p) {
-    float p1, p2, prestacao, juros, amortizacao, saldoDevedor;
-
-    // Cálculo da prestação
-    p1 = pow(j + 1, p) * j;
-    p2 = pow(j + 1, p) - 1;
-    p1 = p1 / p2;
-    prestacao = v * p1;
-
-    // Inicialização dos valores de juros, amortização e saldo devedor
-    juros = v * j;
-    amortizacao = prestacao - juros;
-    saldoDevedor = v - amortizacao;
-
-    cout << "Parcela | Prestação | Juros | Amortização | Saldo Devedor\n";
-    cout << "----------------------------------------------------------\n";
-
-    // Loop para calcular e imprimir cada parcela
-    for (int i = 1; i <= p; i++) {
-        if (i == p) {
-            saldoDevedor = 0;
-        }
-
-        cout << setw(3) << i << "  "
-             << setw(9) << fixed << setprecision(2) << prestacao << "  "
-             << setw(9) << fixed << setprecision(2) << juros << "  "
-             << setw(9) << fixed << setprecision(2) << amortizacao << "  "
-             << setw(9) << fixed << setprecision(2) << saldoDevedor << endl;
-
-        juros = saldoDevedor * j;
-        amortizacao = prestacao - juros;
-        saldoDevedor -= amortizacao;
+    // Função para limpar o buffer de entrada
+    void trivia() {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
-}
 
-// Função para inserir o período de tempo
-int inserirPeriodo() {
-    int p;
-    cout << "\n\n - Insira o período de tempo -\n\n - Período: ";
-    cin >> p;
-    trivia();
-    return p;
-}
+    // Função para validar a entrada do usuário
+    float validarEntrada(string mensagem) {
+        float valor;
+        while (true) {
+            cout << mensagem;
+            cin >> valor;
+            if (cin.fail() || valor <= 0) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Entrada inválida. Por favor, insira um número positivo.\n";
+            } else {
+                trivia();
+                return valor;
+            }
+        }
+    }
 
-// Função para inserir a taxa de juros
-float inserirJuros() {
-    float j;
-    cout << "\n\n - Insira a taxa de juros -\n\n - Juros: ";
-    cin >> j;
-    trivia();
-    return j / 100;
-}
+public:
+    void f4() {
+        // Cálculo da prestação
+        float p1 = pow(1 + j, p) * j;
+        float p2 = pow(1 + j, p) - 1;
+        prestacao = v * (p1 / p2);
 
-// Função para inserir o valor inicial do empréstimo
-float inserirValor() {
-    float v;
-    cout << "\n - Sistema de amortização -\n\n - Insira o valor inicial do empréstimo -\n\n - Valor: ";
-    cin >> v;
-    trivia();
-    return v;
-}
+        // Inicialização dos valores de juros, amortização e saldo devedor
+        saldoDevedor = v;
 
-// Função principal para coletar dados e iniciar o cálculo
-void f1() {
-    float v = inserirValor();
-    float j = inserirJuros();
-    int p = inserirPeriodo();
-    f4(v, j, p);
-}
+        cout << "Parcela | Prestação | Juros     | Amortização | Saldo Devedor\n";
+        cout << "------------------------------------------------------------\n";
+
+        // Loop para calcular e imprimir cada parcela
+        for (i = 1; i <= p; i++) {
+            juros = saldoDevedor * j;
+            amortizacao = prestacao - juros;
+            saldoDevedor -= amortizacao;
+
+            if (i == p) {
+                saldoDevedor = 0;
+            }
+
+            cout << setw(4) << i << "   "
+                 << setw(9) << fixed << setprecision(2) << prestacao << "  "
+                 << setw(9) << fixed << setprecision(2) << juros << "  "
+                 << setw(12) << fixed << setprecision(2) << amortizacao << "  "
+                 << setw(12) << fixed << setprecision(2) << saldoDevedor << endl;
+        }
+    }
+
+    // Função para inserir a taxa de juros
+    void inserirJuros() {
+        j = validarEntrada("\n\n - Insira a taxa de juros (em %): ");
+        j = j / 100;
+        f4();
+    }
+
+    // Função para inserir o período de tempo
+    void inserirPeriodo() {
+        p = validarEntrada("\n\n - Insira o período de tempo (número de parcelas): ");
+        inserirJuros();
+    }
+
+    // Função para inserir o valor do empréstimo
+    void inserirValor() {
+        v = validarEntrada("\n - Sistema de amortização -\n\n - Insira o valor inicial do empréstimo: ");
+        inserirPeriodo();
+    }
+};
 
 int main() {
     // Configurando a localidade para Português
     setlocale(LC_ALL, "Portuguese");
-
-    f1();
+    Emprestimo emprestimo;
+    emprestimo.inserirValor();
     cout << "\n\n";
     system("PAUSE");
     return 0;
